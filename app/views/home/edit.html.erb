@@ -1,9 +1,17 @@
 <%= render 'shared/header' %>
 
+<script>
+      document.getElementById("CopyElement").addEventListener("click", function(event){
+            event.preventDefault();
+        });
+</script>
+
 <main class="py-10 max-w-7xl mx-auto px-4 sm:px-8">
     <%= form_for(@profile, builder: TailwindInputBuilder) do |f| %>
         <div class="flex justify-end items-center w-full mb-4">
             <div>
+                <%= render 'shared/input/buttons/secondary', color: "purple", label: "Copy Link", href: profile_url(@profile), id: "CopyElement" %>
+                <%= render 'shared/input/buttons/secondary', color: "purple", label: "Preview", href: preview_url, target: "_blank" %>
                 <%= f.submit "Save", class: "flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-green-600 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-green-200" %><br/>
             </div>
         </div>
@@ -11,9 +19,11 @@
         <%= render 'shared/edit_section', title: "Profile details" do %>
             <%= f.text_field :name, value: @profile.name || current_user.name, placeholder: "Name" %><br/>
             <div class="flex items-center my-4">
-                <%= image_tag gravatar_url_for(current_user), 
-                    id: "image-preview", style:"max-width:200px"
-                %>
+                <%= image_tag gravatar_url_for(current_user), id: "image-preview", style:"max-width:200px" %>
+                <% if @profile.avatar.attached? %>
+                    <%= image_tag @profile.avatar, id: "image-preview", style:"max-width:200px" %>
+                <% end %>
+                <%= f.file_field :avatar %>
             </div>
             <%= f.text_field :job_title, value: @profile.job_title, placeholder: "Job title" %><br/>
             <%= f.text_field :total_experience, value: @profile.total_experience, placeholder: "Total experience" %><br/>
@@ -32,12 +42,28 @@
             
         <% end %>
 
+        <%= render 'shared/edit_section', title: "Experience" do %>
+            <%= f.fields_for :experiences do |experience| %>
+                <%= render 'shared/input/experience', experience: experience %>
+                <h3 class="text-lg font-semibold">Projects</h3>
+                    <div class="pl-4 mb-2 border-l border-blueGray-400">
+                        <%= render 'shared/edit_sub_section' do %>
+                            <%= experience.fields_for :projects do |project| %>
+                            <%= render 'shared/input/project', project: project %>
+                        <% end %><br/>
+                        <%= render 'shared/input/buttons/add', label: "+ Add Project", path: new_project_path(experience.object.id) %>
+                    </div>
+                <% end %>
+            <% end %><br />
+            <%= render 'shared/input/buttons/add', label: "+ Add Experience", path: new_experience_path %>
+        <% end %>
+
         <%= render 'shared/edit_section', title: "Education" do %>
             <%= f.fields_for :educations do |education| %>
                 <%= render 'shared/input/education', education: education %>
             <% end %><br />
-            <%= render 'shared/input/buttons/add', label: "+ Add Education", path: "/educations/new" %>
-        <% end %>
+            <%= render 'shared/input/buttons/add', label: "+ Add Education", path: new_education_path %>
+        <% end %> 
         
     <% end %>
 

@@ -3,14 +3,16 @@ class UsersController < ApplicationController
     @user= User.new
   end
 
+  def show
+    @user = User.find(params[:id])
+  end
+
   def create
     @user= User.new(user_params)
     if @user.save
-      @user.profile = Profile.new(profile_params)
-      @user.profile.educations.create
-      # @user.profile.projects.create
-      flash[:success] = "Account created successfully!"
-      redirect_to login_path
+      Profile.create(user: @user)
+      log_in(@user)
+      redirect_to(edit_url)
     else
       flash.now.alert = "Oops, couldn't create account."
       render :new
@@ -21,9 +23,5 @@ class UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation)
-  end
-
-  def profile_params
-    params.require(:user).permit(:name)
   end
 end

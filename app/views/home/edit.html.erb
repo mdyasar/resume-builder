@@ -1,16 +1,18 @@
 <%= render 'shared/header' %>
 
 <script>
-      document.getElementById("CopyElement").addEventListener("click", function(event){
-            event.preventDefault();
-        });
+    function copylink(){
+        const c= document.getElementById("copyElement");
+        navigator.clipboard.writeText(c.dataset.copy);
+        c.innerHTML= "Copied!";
+    }
 </script>
 
 <main class="py-10 max-w-7xl mx-auto px-4 sm:px-8">
     <%= form_for(@profile, builder: TailwindInputBuilder) do |f| %>
         <div class="flex justify-end items-center w-full mb-4">
             <div>
-                <%= render 'shared/input/buttons/secondary', color: "purple", label: "Copy Link", href: profile_url(@profile), id: "CopyElement" %>
+                <p class="py-2 px-4 border-2 border-purple-600 text-purple-600 hover:border-purple-700 hover:text-purple-700 text-center text-base font-semibold shadow-md hover:shadow-none focus:outline-none rounded-lg" style="display: inline; cursor: pointer;" id="copyElement" data-copy="<%= profile_url(@profile) %>" onclick="copylink()">Copy Link</p>
                 <%= render 'shared/input/buttons/secondary', color: "purple", label: "Preview", href: preview_url, target: "_blank" %>
                 <%= f.submit "Save", class: "flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-green-600 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-green-200" %><br/>
             </div>
@@ -19,7 +21,6 @@
         <%= render 'shared/edit_section', title: "Profile details" do %>
             <%= f.text_field :name, value: @profile.name || current_user.name, placeholder: "Name" %><br/>
             <div class="flex items-center my-4">
-                <%= image_tag gravatar_url_for(current_user), id: "image-preview", style:"max-width:200px" %>
                 <% if @profile.avatar.attached? %>
                     <%= image_tag @profile.avatar, id: "image-preview", style:"max-width:200px" %>
                 <% end %>

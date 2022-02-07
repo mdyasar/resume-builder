@@ -17,6 +17,7 @@ class ProfilesController < ApplicationController
     end
 
     def update
+        # render json: params[:profile][:experiences_attributes].values
         updated_profile_params = update_array_attributes_in_params(profile_params)
         if params[:profile][:experiences_attributes]
             experience_params= params[:profile][:experiences_attributes].values
@@ -24,11 +25,7 @@ class ProfilesController < ApplicationController
             experience_params.each do | ep |
                 ep.delete('_destroy')
                 @experience = Experience.find(ep[:id])
-                if @experience.update(ep)
-                    redirect_to edit_url and return
-                else
-                    render plain: "Not added Experience"
-                end
+                @experience.update(ep)
             end
         end 
         
@@ -38,11 +35,7 @@ class ProfilesController < ApplicationController
             education_params.each do | edp |
                 edp.delete("_destroy")
                 @education= Education.find(edp[:id])
-                if @education.update(edp)
-                    redirect_to edit_url and return
-                else
-                    render plain: "Not added Education"
-                end
+                @education.update(edp)
             end
         end
         
@@ -94,7 +87,7 @@ class ProfilesController < ApplicationController
     private
         def profile_params
             params.require(:profile).permit(:name, :job_title, :total_experience, :overview, 
-                :career_highlights, :primary_skills, :secondary_skills,
+                :career_highlights, :primary_skills, :secondary_skills, :avatar,
                 :educations_attributes => [ :id, :school, :degree, :description, :start, :end, :_destroy],
                 :experiences_attributes => [:id, :company, :position, :startdate, :enddate, :description, :_destroy],
                 :projects_attributes => [:id, :title, :url, :tech_stack, :description, :_destroy])

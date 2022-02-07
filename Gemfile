@@ -29,6 +29,7 @@ gem 'bootsnap', '>= 1.4.4', require: false
 
 gem 'wdm', '>= 0.1.0' if Gem.win_platform?
 gem 'tailwindcss-rails', '~> 2.0', '>= 2.0.5'
+gem 'aws-sdk-s3', '~> 1.112'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
